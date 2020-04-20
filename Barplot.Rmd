@@ -10,8 +10,12 @@ require(extrafont)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Keep old theme
-old_th <- theme()
+## Keep the default theme in `default.theme`
+
+```{r}
+default.theme <- theme_get()
+```
+
 
 ## A Simple Barplot
 
@@ -433,6 +437,60 @@ ggplot(data = select(iris, Species, Sepal.Length), mapping = aes(x = Species, y 
   )
 ```
 
+
+## Change the default theme
+
+Read https://www.datanovia.com/en/blog/ggplot-themes-gallery/#theme_stata
+
+
+```{r}
+# New theme
+theme_set(
+    panel.grid = element_blank(),
+    panel.background = element_blank(),
+    text = element_text(family = 'Arial', size = 18),
+    plot.title = element_text(hjust = 0.5), # [0, 1],
+    axis.line = element_line(size = 1, linetype = 'solid'),
+    axis.ticks = element_line(size = 1),
+    axis.text.x = element_text(face = 'bold', vjust = 0.5, size = 8)
+)
+
+new.theme <- theme_get()
+
+```
+
+Test if the theme setting work.
+
+Default theme.
+
+```{r}
+theme_set(default.theme)
+
+ggplot(data = select(iris, Species, Sepal.Length), mapping = aes(x = Species, y = Sepal.Length, color = Species)) +
+  geom_jitter(size=4) +
+  stat_summary(fun.y = median, fun.ymin = median, fun.ymax = median, geom = 'crossbar', width=0.5, color = 'Black') +
+  theme(
+    legend.position = "None" 
+  ) +
+  labs(title="Default Theme")
+
+```
+
+```{r}
+theme_set(new.theme)
+
+ggplot(data = select(iris, Species, Sepal.Length), mapping = aes(x = Species, y = Sepal.Length, color = Species)) +
+  scale_fill_brewer(palette = 'Set2') +
+  geom_jitter(size=4) +
+  stat_summary(fun.y = median, fun.ymin = median, fun.ymax = median, geom = 'crossbar', width=0.5, color = 'Black') +
+  theme(
+    legend.position = "None" 
+  ) +
+  labs(title("New Theme"))
+
+```
+
+
 ## Heatmap
 
 `geom_tile(...)` or `geom_raster(...)`
@@ -442,9 +500,3 @@ theme_set(new_th)
 ggplot(data = all.summ) +
   geom_tile(mapping = aes(x = Species, y = Part, fill = u))
 ```
-
-## Change the default theme
-
-Read https://www.datanovia.com/en/blog/ggplot-themes-gallery/#theme_stata
-
-old_th <- theme()
