@@ -443,60 +443,115 @@ ggplot(data = select(iris, Species, Sepal.Length), mapping = aes(x = Species, y 
 Read https://www.datanovia.com/en/blog/ggplot-themes-gallery/#theme_stata
 
 
+# ```{r}
+# # New theme
+# theme_set(
+#     panel.grid = element_blank(),
+#     panel.background = element_blank(),
+#     text = element_text(family = 'Arial', size = 18),
+#     plot.title = element_text(hjust = 0.5), # [0, 1],
+#     axis.line = element_line(size = 1, linetype = 'solid'),
+#     axis.ticks = element_line(size = 1),
+#     axis.text.x = element_text(face = 'bold', vjust = 0.5, size = 8)
+# )
+# 
+# new.theme <- theme_get()
+# 
+# ```
+# 
+# Test if the theme setting work.
+# 
+# Default theme.
+# 
+# ```{r}
+# theme_set(default.theme)
+# 
+# ggplot(data = select(iris, Species, Sepal.Length), mapping = aes(x = Species, y = Sepal.Length, color = Species)) +
+#   geom_jitter(size=4) +
+#   stat_summary(fun.y = median, fun.ymin = median, fun.ymax = median, geom = 'crossbar', width=0.5, color = 'Black') +
+#   theme(
+#     legend.position = "None" 
+#   ) +
+#   labs(title="Default Theme")
+# 
+# ```
+# 
+# ```{r}
+# theme_set(new.theme)
+# 
+# ggplot(data = select(iris, Species, Sepal.Length), mapping = aes(x = Species, y = Sepal.Length, color = Species)) +
+#   scale_fill_brewer(palette = 'Set2') +
+#   geom_jitter(size=4) +
+#   stat_summary(fun.y = median, fun.ymin = median, fun.ymax = median, geom = 'crossbar', width=0.5, color = 'Black') +
+#   theme(
+#     legend.position = "None" 
+#   ) +
+#   labs(title("New Theme"))
+# 
+# ```
+
+
+## Heatmap
+
+`geom_tile(...)` or `geom_raster(...)`. According to R Graphics Cookbook p.282, `geom_raster(...)` is more efficient than `geom_tile(...)`. 
+
 ```{r}
-# New theme
-theme_set(
+
+ggplot(data = all.summ) +
+  geom_tile(mapping = aes(x = Species, y = Part, fill = u)) +
+  labs(title='geom_tile plot')
+
+ggplot(data = all.summ) +
+  geom_raster(mapping = aes(x = Species, y = Part, fill = u)) +
+  labs(title='geom_raster plot')
+
+```
+
+To change the scale of the heatmap, specify `breaks=`.
+
+```{r}
+ggplot(data = all.summ) +
+  geom_tile(mapping = aes(x = Species, y = Part, fill = u)) +
+  scale_fill_gradient2(midpoint=5, mid='grey70', limits=c(0,10)) +
+  labs(title='Range(0,10), Midpoint=5')
+```
+
+
+Change color of the spectrum.
+
+```{r}
+
+ggplot(data = all.summ) +
+  geom_tile(mapping = aes(x = Species, y = Part, fill = u)) +
+  scale_fill_gradientn(colors = rainbow(5)) +
+  labs(title='Change Colors to Rainbow with 5 colors')
+
+ggplot(data = all.summ) +
+  geom_tile(mapping = aes(x = Species, y = Part, fill = u)) +
+  scale_fill_gradientn(colors = rainbow(10)) +
+  labs(title='Change Colors to Rainbow with 10 colors')
+
+```
+
+## Side-by-side barplot
+
+separate the bars
+fix the position of error bars by `position = position_dodge(width=0.8)`. What does 0.8 control?
+
+```{r}
+ggplot(data = all.summ, mapping = aes(x=Part, y=u, fill=Species)) +
+  geom_bar(position = position_dodge(), stat = 'identity', width=0.8, color='black') +
+  geom_errorbar(mapping = aes(ymin=u-se, ymax=u+se), position = position_dodge(width=0.8), width=0.2) +
+  scale_fill_brewer(palette = 'Set2') +
+  labs(title = 'Side-by-side Barplot with error bar', x = 'Measurement', y = 'Length or Width (cm)') +
+  theme(
     panel.grid = element_blank(),
     panel.background = element_blank(),
     text = element_text(family = 'Arial', size = 18),
     plot.title = element_text(hjust = 0.5), # [0, 1],
     axis.line = element_line(size = 1, linetype = 'solid'),
     axis.ticks = element_line(size = 1),
-    axis.text.x = element_text(face = 'bold', vjust = 0.5, size = 8)
-)
-
-new.theme <- theme_get()
-
-```
-
-Test if the theme setting work.
-
-Default theme.
-
-```{r}
-theme_set(default.theme)
-
-ggplot(data = select(iris, Species, Sepal.Length), mapping = aes(x = Species, y = Sepal.Length, color = Species)) +
-  geom_jitter(size=4) +
-  stat_summary(fun.y = median, fun.ymin = median, fun.ymax = median, geom = 'crossbar', width=0.5, color = 'Black') +
-  theme(
-    legend.position = "None" 
-  ) +
-  labs(title="Default Theme")
-
-```
-
-```{r}
-theme_set(new.theme)
-
-ggplot(data = select(iris, Species, Sepal.Length), mapping = aes(x = Species, y = Sepal.Length, color = Species)) +
-  scale_fill_brewer(palette = 'Set2') +
-  geom_jitter(size=4) +
-  stat_summary(fun.y = median, fun.ymin = median, fun.ymax = median, geom = 'crossbar', width=0.5, color = 'Black') +
-  theme(
-    legend.position = "None" 
-  ) +
-  labs(title("New Theme"))
-
-```
-
-
-## Heatmap
-
-`geom_tile(...)` or `geom_raster(...)`
-
-```{r}
-theme_set(new_th)
-ggplot(data = all.summ) +
-  geom_tile(mapping = aes(x = Species, y = Part, fill = u))
+    axis.text.x = element_text(face = 'bold', angle = 45, vjust = 0.5, size = 8),
+    legend.position = "None"
+  )
 ```
